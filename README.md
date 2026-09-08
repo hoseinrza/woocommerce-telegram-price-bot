@@ -261,11 +261,39 @@ Minimal external check (add to cron or your monitoring tool of choice):
 curl -sf https://api.example.com/api/health | jq -e '.status == "ok"'
 ```
 
+## CI/CD
+
+Two GitHub Actions workflows live under `.github/workflows/`:
+
+- **`ci.yml`** — runs on every pull request and push to `main`: installs
+  dependencies, lints, spins up real Postgres/Redis service containers, runs
+  migrations against them, runs the full test suite, and builds the Docker
+  image as a sanity check. This is the required check to keep `main` green.
+- **`cd.yml`** — runs on every push to `main`: builds the Docker image and
+  publishes it to GitHub Container Registry as
+  `ghcr.io/<owner>/<repo>:latest` and `:<commit-sha>`. A second `deploy` job
+  then SSHes into your VPS and re-deploys from source (`git reset --hard
+  origin/main && docker compose up -d --build && npm run migrate`) — it only
+  runs once the following repository secrets are set (Settings → Secrets and
+  variables → Actions); until then it's skipped and the workflow still
+  succeeds after the image push:
+
+  | Secret | Purpose |
+  |---|---|
+  | `DEPLOY_HOST` | VPS hostname/IP |
+  | `DEPLOY_USER` | SSH user with access to the deploy path |
+  | `DEPLOY_SSH_KEY` | Private key for that user (add the matching public key to the VPS's `authorized_keys`) |
+  | `DEPLOY_PATH` | Absolute path to the cloned repo on the VPS, e.g. `/opt/woocommerce-telegram-price-bot` |
+
+  The VPS itself still needs its own `.env` (never stored in GitHub) — see
+  [Production deployment](#production-deployment-ubuntu-vps) above.
+
 ## Testing
 
 ```bash
 npm test          # unit + integration (uses Node's built-in test runner, no extra deps)
 npm run test:unit
+npm run lint
 ```
 
 Covered scenarios: price parsing/validation edge cases (`null`, empty
