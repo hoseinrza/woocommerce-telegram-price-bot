@@ -49,13 +49,27 @@ jobs:
   # Deploys to the production VPS over SSH once the image is published.
   # Only runs when the repository has DEPLOY_HOST configured (Settings ->
   # Secrets and variables -> Actions). Until those secrets are added this
-  # job is skipped and the workflow still succeeds after the image push.
+  # job's steps are skipped and the workflow still succeeds after the image
+  # push. Note: the `secrets` context cannot be referenced directly in a
+  # job-level `if:` (GitHub Actions fails the whole workflow at parse time
+  # if you try) — so the check has to happen in a regular step instead, and
+  # every subsequent step gates on that step's output.
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && secrets.DEPLOY_HOST != '' }}
+    if: github.ref == 'refs/heads/main'
     steps:
+      - name: Check deploy secrets are configured
+        id: check
+        run: |
+          if [ -n "${{ secrets.DEPLOY_HOST }}" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy over SSH
+        if: steps.check.outputs.configured == 'true'
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
