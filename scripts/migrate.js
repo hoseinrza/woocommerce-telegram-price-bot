@@ -52,7 +52,6 @@ async function run() {
       const content = await readFile(path.join(migrationsDir, file), 'utf8');
       const sql = extractUpSql(content);
 
-      // eslint-disable-next-line no-console
       console.log(`Applying migration: ${file}`);
 
       await client.query('BEGIN');
@@ -66,7 +65,6 @@ async function run() {
       }
     }
 
-    // eslint-disable-next-line no-console
     console.log('All migrations applied.');
   } finally {
     client.release();
@@ -75,7 +73,6 @@ async function run() {
 }
 
 run().catch((error) => {
-  // eslint-disable-next-line no-console
   console.error(error);
   process.exit(1);
 });
