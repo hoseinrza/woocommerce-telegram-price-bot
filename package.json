@@ -1,0 +1,33 @@
+{
+  "name": "woocommerce-telegram-price-bot",
+  "version": "1.0.0",
+  "description": "Real-time WooCommerce price tracking and Telegram updates powered by Node.js, Redis, and PostgreSQL.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "test": "node --test tests/unit/**/*.test.js tests/integration/**/*.test.js",
+    "test:unit": "node --test tests/unit/**/*.test.js",
+    "lint": "eslint src tests scripts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "pg": "^8.13.1",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "redis": "^4.7.0",
+    "telegraf": "^4.16.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.18.0"
+  }
+}
