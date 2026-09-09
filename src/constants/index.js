@@ -26,6 +26,18 @@ export const LOG_EVENTS = {
   DATABASE_CONNECTION_FAILED: 'database_connection_failed',
 };
 
+// WooCommerce product IDs behind each line of the channel rate-card broadcast.
+export const RATE_CARD_WOOCOMMERCE_IDS = {
+  USD: 344,
+  GOLD_18K: 271,
+  COIN_FULL_BUY: 285,
+  COIN_HALF_BUY: 286,
+  COIN_QUARTER_BUY: 287,
+  COIN_FULL_SELL: 225,
+  COIN_HALF_SELL: 276,
+  COIN_QUARTER_SELL: 277,
+};
+
 export const ERROR_CODES = {
   PRODUCT_NOT_FOUND: 'PRODUCT_NOT_FOUND',
   SUBSCRIPTION_NOT_FOUND: 'SUBSCRIPTION_NOT_FOUND',

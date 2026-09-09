@@ -52,6 +52,23 @@ export function formatPrice(value, { currencyLabel = env.PRICE_CURRENCY_LABEL } 
   return currencyLabel ? `${formatted} ${currencyLabel}` : formatted;
 }
 
+const PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+export function toPersianDigits(input) {
+  return String(input).replace(/[0-9]/g, (digit) => PERSIAN_DIGITS[Number(digit)]);
+}
+
+/** Same grouping as formatPrice but with Persian digits, for the rate-card broadcast. */
+export function formatPriceFa(value, { currencyLabel = env.PRICE_CURRENCY_LABEL } = {}) {
+  if (value === null || value === undefined) return 'نامشخص';
+
+  const formatted = toPersianDigits(
+    new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(value))
+  );
+
+  return currencyLabel ? `${formatted} ${currencyLabel}` : formatted;
+}
+
 /**
  * WooCommerce's `date_modified` field is already in the store's own
  * timezone (Iran) — no conversion needed, just pull HH:MM out of the
