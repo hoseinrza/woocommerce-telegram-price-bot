@@ -58,6 +58,13 @@ export async function listDistinctTrackedProductIds() {
   return rows.map((row) => Number(row.product_id));
 }
 
+export async function deactivateAllForUser(telegramUserId) {
+  await pool.query(
+    `UPDATE subscriptions SET is_active = FALSE WHERE telegram_user_id = $1 AND is_active = TRUE`,
+    [telegramUserId]
+  );
+}
+
 export async function countActiveSubscriptions() {
   const { rows } = await pool.query('SELECT COUNT(*)::int AS count FROM subscriptions WHERE is_active = TRUE');
   return rows[0].count;

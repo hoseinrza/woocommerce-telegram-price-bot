@@ -52,6 +52,17 @@ export function formatPrice(value, { currencyLabel = env.PRICE_CURRENCY_LABEL } 
   return currencyLabel ? `${formatted} ${currencyLabel}` : formatted;
 }
 
+/**
+ * WooCommerce's `date_modified` field is already in the store's own
+ * timezone (Iran) — no conversion needed, just pull HH:MM out of the
+ * ISO-shaped string ("2026-09-08T18:03:28" -> "18:03").
+ */
+export function formatUpdateTime(dateModified) {
+  if (!dateModified) return null;
+  const match = /T(\d{2}):(\d{2})/.exec(dateModified);
+  return match ? `${match[1]}:${match[2]}` : null;
+}
+
 export function formatStockStatus(stockStatus) {
   switch (stockStatus) {
     case 'instock':
@@ -63,4 +74,13 @@ export function formatStockStatus(stockStatus) {
     default:
       return '⚪️ نامشخص';
   }
+}
+
+export function formatProductLine(product) {
+  const time = formatUpdateTime(product.dateModified);
+  const lines = [`🛒 ${product.name}`, `💰 ${formatPrice(product.price)} — ${formatStockStatus(product.stockStatus)}`];
+  if (time) {
+    lines.push(`🔄 آخرین بروزرسانی: ${time}`);
+  }
+  return lines.join('\n');
 }

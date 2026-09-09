@@ -5,6 +5,14 @@ import { connectRedis, closeRedis } from './config/redis.js';
 import { closeDatabase, checkDatabaseHealth } from './config/database.js';
 import { startBot, stopBot } from './bot/bot.js';
 import { startPriceScheduler, stopPriceScheduler } from './scheduler/price.scheduler.js';
+import {
+  startChannelBroadcastScheduler,
+  stopChannelBroadcastScheduler,
+} from './scheduler/channel-broadcast.scheduler.js';
+import {
+  startDailyDigestScheduler,
+  stopDailyDigestScheduler,
+} from './scheduler/daily-digest.scheduler.js';
 
 async function main() {
   await connectRedis();
@@ -27,6 +35,19 @@ async function main() {
   startPriceScheduler();
   logger.info({ event: 'price_scheduler_started', intervalMs: env.PRICE_SYNC_INTERVAL_MS });
 
+  startChannelBroadcastScheduler();
+  logger.info({
+    event: 'channel_broadcast_scheduler_started',
+    intervalMs: env.CHANNEL_BROADCAST_INTERVAL_MS,
+  });
+
+  startDailyDigestScheduler();
+  logger.info({
+    event: 'daily_digest_scheduler_started',
+    hour: env.DAILY_DIGEST_HOUR,
+    minute: env.DAILY_DIGEST_MINUTE,
+  });
+
   let shuttingDown = false;
 
   async function shutdown(signal) {
@@ -35,6 +56,8 @@ async function main() {
     logger.info({ event: 'shutdown_initiated', signal });
 
     stopPriceScheduler();
+    stopChannelBroadcastScheduler();
+    stopDailyDigestScheduler();
     stopBot(signal);
 
     await new Promise((resolve) => server.close(resolve));

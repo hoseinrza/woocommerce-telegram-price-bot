@@ -15,6 +15,7 @@ const wooProductSchema = z.object({
   sale_price: z.union([z.string(), z.number()]).optional().nullable(),
   stock_status: z.string().optional().nullable(),
   permalink: z.string().optional().nullable(),
+  date_modified: z.string().optional().nullable(),
 });
 
 function normalizeProduct(raw) {
@@ -28,6 +29,9 @@ function normalizeProduct(raw) {
     salePrice: parsePrice(parsed.sale_price),
     stockStatus: parsed.stock_status ?? 'instock',
     permalink: parsed.permalink ?? null,
+    // WooCommerce returns this in the store's own timezone (Iran), not UTC —
+    // safe to display as-is with no timezone conversion.
+    dateModified: parsed.date_modified ?? null,
   };
 }
 

@@ -22,6 +22,14 @@ const envSchema = z.object({
   PRICE_SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(60_000),
   PRICE_SYNC_LOCK_TTL_SECONDS: z.coerce.number().int().positive().default(55),
 
+  CHANNEL_BROADCAST_INTERVAL_MS: z.coerce.number().int().positive().default(60_000),
+
+  DAILY_DIGEST_HOUR: z.coerce.number().int().min(0).max(23).default(9),
+  DAILY_DIGEST_MINUTE: z.coerce.number().int().min(0).max(59).default(0),
+
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().default('gemini-flash-lite-latest'),
+
   PRICE_CURRENCY: z.string().default('IRR'),
   PRICE_CURRENCY_LABEL: z.string().default('تومان'),
 
